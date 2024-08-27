@@ -48,6 +48,10 @@ const CartItem = ({ onContinueShopping ,cartNum, setCartNum, setAddedToCart }) =
       let newNum = cartNum-1
       setCartNum(newNum)
       dispatch(removeItem(item.name));
+      setAddedToCart((prevState) => ({
+        ...prevState,
+        [item.name]: false, 
+      }));
 
     }
    
