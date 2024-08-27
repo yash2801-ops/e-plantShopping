@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeItem, updateQuantity } from './CartSlice';
+
 
 import './CartItem.css';
 
 
-const CartItem = ({ onContinueShopping ,cartNum, setCartNum }) => {
+const CartItem = ({ onContinueShopping ,cartNum, setCartNum, setAddedToCart }) => {
   const cart = useSelector(state => state.cart.items);
   const dispatch = useDispatch();
+  
+
   
 
   // Calculate total amount for all products in the cart
@@ -15,11 +18,11 @@ const CartItem = ({ onContinueShopping ,cartNum, setCartNum }) => {
     let total=0
     for(let i=0;i<cart.length;i++){
       let amount =cart[i].quantity
-      let price = cart[i].cost
+      let price = Number(cart[i].cost.slice(1))
       let itemTotal=amount*price
       total= total + itemTotal
     }
-    return total
+    return total;
   };
 
   const handleContinueShopping = (e) => {
@@ -31,32 +34,41 @@ const CartItem = ({ onContinueShopping ,cartNum, setCartNum }) => {
   };
 
   const handleIncrement = (item) => {
-    dispatch(updateQuantity(item, item.quantitiy+1))
-
+    let newNum = cartNum+1
+      setCartNum(newNum)
+    let newQuantity = item.quantity + 1;
+    dispatch(updateQuantity({ name: item.name, quantity: newQuantity }));
   };
 
   const handleDecrement = (item) => {
-    if(item.quantitiy>0){    
-      dispatch(updateQuantity(item,item.quantitiy-1))}
+    let newQuantity=item.quantity-1
+    if(item.quantity>1){    
+      dispatch(updateQuantity({name:item.name, quantity:newQuantity}));}
     else{
-      dispatch(removeItem(item))
+      let newNum = cartNum-1
+      setCartNum(newNum)
+      dispatch(removeItem(item.name));
 
     }
    
   };
 
   const handleRemove = (item) => {
-    dispatch(removeItem(item))
-    let newNum = cartNum-1
+    dispatch(removeItem(item.name));
+    let newNum = cartNum-item.quantity
     setCartNum(newNum)
+    setAddedToCart((prevState) => ({
+      ...prevState,
+      [item.name]: false, 
+    }));
   };
 
   // Calculate total cost based on quantity for an item
   const calculateTotalCost = (item) => {
-    let quant = item.quantitiy
-    let cost = item.cost
-    let subtotal = cost*quant
-    return subtotal
+    const quant = item.quantity;
+    let cost = Number(item.cost.slice(1));
+    let subtotal = cost*quant;
+    return subtotal;
   };
 
   return (
@@ -82,7 +94,7 @@ const CartItem = ({ onContinueShopping ,cartNum, setCartNum }) => {
         
         </li>
          )}
-        )})
+        )}
       </ul>
       <div style={{ marginTop: '20px', color: 'black' }} className='total_cart_amount'></div>
       <div className="continue_shopping_btn">

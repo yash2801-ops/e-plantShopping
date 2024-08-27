@@ -254,15 +254,24 @@ const handleContinueShopping = (e) => {
     setShowCart(false);
 };
 
-const handleAddToCart = (product) => {
-    let newNum=cartNum+1
-    setCartNum(newNum)
-    dispatch(addItem(product));
-    setAddedToCart((prevState) => ({
-       ...prevState,
-       [product.name]: true, // Set the product name as key and value as true to indicate it's added to cart
-     }));
-  };
+
+const handleAddToCart = (plant) => {
+  let newNum = cartNum + 1;
+  setCartNum(newNum);
+  dispatch(addItem(plant));
+  setAddedToCart((prevState) => ({
+    ...prevState,
+    [plant.name]: true,
+  }));
+  const buttons = document.querySelectorAll('.product-button');
+  buttons.forEach((button) => {
+    if (button.textContent === 'Add To Cart' && button.parentElement.querySelector('.product-title').textContent === plant.name) {
+      button.disabled = true;
+      button.classList.add('added-to-cart');
+      button.textContent = 'Added to Cart';
+    }
+  });
+};
     return (
         <div>
              <div className="navbar" style={styleObj}>
@@ -297,7 +306,7 @@ const handleAddToCart = (product) => {
                                     <p className='product-price'>{plant.cost}</p>
                                     <img className='product-image' src={plant.image} alt="" />
                                     <p>{plant.description}</p>
-                                    <button className='product-button' onClick={(e)=>handleAddToCart(e)} >Add To Cart</button>
+                                    <button className={`product-button ${addedToCart[plant.name] ? 'added-to-cart' : ''}`} onClick={() => handleAddToCart(plant)} disabled={addedToCart[plant.name]}> {addedToCart[plant.name] ? 'Added to Cart' : 'Add To Cart'} </button>
 
                                 </li>)
                             })
@@ -310,7 +319,7 @@ const handleAddToCart = (product) => {
 
         </ul>
  ) :  (
-    <CartItem cartNum={cartNum} setCartNum={setCartNum} onContinueShopping={handleContinueShopping}/>
+    <CartItem setAddedToCart={setAddedToCart} cartNum={cartNum} setCartNum={setCartNum} onContinueShopping={handleContinueShopping}/>
 )}
     </div>
     );
