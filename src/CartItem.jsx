@@ -41,12 +41,12 @@ const CartItem = ({ onContinueShopping ,cartNum, setCartNum, setAddedToCart }) =
   };
 
   const handleDecrement = (item) => {
+    let newNum = cartNum-1
+      setCartNum(newNum)
     let newQuantity=item.quantity-1
     if(item.quantity>1){    
       dispatch(updateQuantity({name:item.name, quantity:newQuantity}));}
     else{
-      let newNum = cartNum-1
-      setCartNum(newNum)
       dispatch(removeItem(item.name));
       setAddedToCart((prevState) => ({
         ...prevState,
